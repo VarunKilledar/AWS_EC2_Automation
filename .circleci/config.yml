@@ -1,0 +1,34 @@
+version: 2.1
+
+jobs:
+  build:
+  - docker: cicrcle/node:14
+  - steps:
+      - checkout
+      - run:
+          - name: Installing Node Dependencies
+          - command: npm install
+      - run:
+          - name: Creating Production Build for Node App
+          - command: npm run build
+  aws_cli_configure:
+        - steps:
+            - run:
+                - name: Install AWS CLI And Configure it 
+                - command: |
+                     curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                     unzip awscliv2.zip
+                     sudo ./aws/install
+
+                - name: Configure AWS/CLI using of aws credentials
+                - command: |
+                    aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                    aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+                    aws configure set default.region $AWS_REGION
+  data_Deployment_to_S3_bucket:
+            - steps:
+                - checkout:
+                    - run:
+                        - name: Sending the build to the bucket
+                        - command: |
+                              aws s3 sync ./build s3://deploymentbucket/ --recursive
