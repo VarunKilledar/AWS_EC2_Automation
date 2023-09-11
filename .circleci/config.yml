@@ -8,9 +8,6 @@ jobs:
       - run:
           - name: Installing Node Dependencies
           - command: npm install
-      - run:
-          - name: Creating Production Build for Node App
-          - command: npm run build
   aws_cli_configure:
         - steps:
             - run:
